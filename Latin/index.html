@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Latin Practice</title>
+<style>
+  :root {
+    --bg: #fdf6e9;
+    --card: #ffffff;
+    --ink: #2b2140;
+    --muted: #6d6380;
+    --line: #e6dccb;
+    --accent: #7b4fd6;
+    --accent-dark: #5c35b3;
+    --gold: #f2b134;
+    --good: #22a35a;
+    --good-bg: #e6f7ec;
+    --bad: #d9443f;
+    --bad-bg: #fdecec;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Trebuchet MS", "Avenir Next", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+  button { font: inherit; cursor: pointer; }
+  button:disabled { cursor: default; }
+  main { max-width: 680px; margin: 0 auto; padding: 28px 16px 60px; }
+
+  h1 { text-align: center; font-size: 2.3rem; margin: 0 0 4px; }
+  .tagline { text-align: center; color: var(--muted); margin: 0 0 26px; }
+  h2 { font-size: 1rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin: 26px 0 10px; }
+
+  .card { background: var(--card); border: 2px solid var(--line); border-radius: 18px; padding: 20px; }
+
+  .btn {
+    background: var(--accent); color: #fff; border: none; border-radius: 14px;
+    padding: 13px 26px; font-size: 1.1rem; font-weight: 700;
+    box-shadow: 0 4px 0 var(--accent-dark);
+  }
+  .btn:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 var(--accent-dark); }
+  .btn:disabled { opacity: 0.4; }
+  .btn.secondary { background: #fff; color: var(--ink); border: 2px solid var(--line); box-shadow: 0 4px 0 var(--line); }
+
+  /* lessons */
+  .lesson {
+    display: flex; gap: 14px; align-items: flex-start; width: 100%; text-align: left;
+    background: var(--card); border: 3px solid var(--line); border-radius: 16px;
+    padding: 14px 16px; margin-bottom: 10px; color: var(--ink);
+  }
+  .lesson.on { border-color: var(--accent); background: #f4effd; }
+  .check {
+    flex: 0 0 28px; height: 28px; border-radius: 8px; border: 3px solid var(--line);
+    display: grid; place-items: center; font-weight: 900; color: #fff; margin-top: 2px;
+  }
+  .lesson.on .check { background: var(--accent); border-color: var(--accent); }
+  .lesson-title { font-weight: 800; font-size: 1.15rem; }
+  .saying { font-style: italic; margin-top: 2px; }
+  .saying-meaning { color: var(--muted); font-size: 0.92rem; }
+  .lesson-words { color: var(--muted); font-size: 0.9rem; margin-top: 6px; }
+
+  /* modes */
+  .mode {
+    display: block; width: 100%; text-align: left; background: var(--card);
+    border: 3px solid var(--line); border-radius: 16px; padding: 16px 18px; margin-bottom: 10px; color: var(--ink);
+  }
+  .mode:hover:not(:disabled) { border-color: var(--accent); }
+  .mode:disabled { opacity: 0.45; }
+  .mode-title { font-weight: 800; font-size: 1.15rem; }
+  .mode-desc { color: var(--muted); margin-top: 3px; }
+
+  /* quiz */
+  .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; gap: 10px; }
+  .progress { flex: 1; height: 14px; background: #efe6d6; border-radius: 99px; overflow: hidden; }
+  .progress div { height: 100%; background: var(--gold); border-radius: 99px; transition: width .3s; }
+  .score { font-weight: 800; white-space: nowrap; }
+  .link { background: none; border: none; color: var(--muted); text-decoration: underline; padding: 4px; }
+
+  .prompt { text-align: center; }
+  .prompt-label { color: var(--muted); font-size: 0.95rem; }
+  .latin-word { font-size: 3rem; font-weight: 900; margin: 6px 0 18px; color: var(--accent-dark); letter-spacing: 0.01em; }
+  .answer-input {
+    width: 100%; max-width: 420px; font: inherit; font-size: 1.3rem; padding: 13px 16px; text-align: center;
+    border: 3px solid var(--line); border-radius: 14px; color: var(--ink); margin-bottom: 14px;
+  }
+  .answer-input:focus { outline: none; border-color: var(--accent); }
+  .answer-input.good { border: 4px solid var(--good); background: var(--good-bg); color: var(--good); font-weight: 700; }
+  .answer-input.bad { border: 4px solid var(--bad); background: var(--bad-bg); color: var(--bad); font-weight: 700; text-decoration: line-through; }
+
+  .group { margin: 0 auto 16px; max-width: 480px; text-align: left; }
+  .group-label { font-weight: 800; color: var(--muted); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+  .options { display: flex; gap: 10px; flex-wrap: wrap; }
+  .opt {
+    flex: 1 1 0; min-width: 110px; background: #fff; border: 3px solid var(--line); border-radius: 14px;
+    padding: 12px 10px; font-size: 1.05rem; font-weight: 700; color: var(--ink);
+  }
+  .opt.selected { border-color: var(--accent); background: #f4effd; }
+  .opt.right { border-color: var(--good); background: var(--good); color: #fff; }
+  .opt.wrong { border-color: var(--bad); background: var(--bad); color: #fff; text-decoration: line-through; }
+  .opt.missed { border-color: var(--good); border-style: dashed; color: var(--good); background: var(--good-bg); }
+
+  .feedback { margin-top: 8px; border-radius: 16px; padding: 14px 18px; border: 4px solid; text-align: center; }
+  .feedback.good { border-color: var(--good); background: var(--good-bg); }
+  .feedback.bad { border-color: var(--bad); background: var(--bad-bg); }
+  .feedback .answer { font-size: 1.8rem; font-weight: 900; margin: 4px 0; }
+  .feedback .note { margin: 6px 0; }
+  .feedback .extra { color: var(--muted); font-size: 0.95rem; margin-top: 4px; }
+
+  /* result */
+  .verdict { font-size: 2rem; font-weight: 900; margin-top: 18px; }
+  .verdict.good { color: var(--good); }
+  .verdict.bad { color: var(--bad); }
+  .answer-label { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 700; }
+  .ending { color: #e07b00; }
+  .yours { font-size: 1.1rem; color: var(--muted); margin-top: 4px; }
+  .yours span { font-weight: 700; color: var(--bad); text-decoration: line-through; }
+  .note { font-size: 1.1rem; margin: 10px auto 0; max-width: 460px; font-weight: 600; }
+  .chart { margin: 16px auto 4px; border-collapse: separate; border-spacing: 6px; }
+  .chart th { color: var(--muted); font-size: 0.9rem; padding: 0 6px; }
+  .chart td { background: #fff; border: 3px solid var(--line); border-radius: 12px; padding: 8px 14px; min-width: 130px; font-size: 0.95rem; }
+  .chart td b { font-size: 1.15rem; }
+  .chart td.right { border-color: var(--good); background: var(--good); color: #fff; }
+  .chart .ending { text-decoration: none; }
+  .chart td.right .ending { color: #fff; }
+  @media (max-width: 480px) {
+    .chart { border-spacing: 4px; }
+    .chart td { min-width: 0; padding: 6px 8px; font-size: 0.85rem; }
+    .chart td b { font-size: 1rem; }
+  }
+  .chart td.wrong { border-color: var(--bad); background: var(--bad-bg); }
+  .prompt .extra { margin-top: 12px; }
+  .btn.big { margin-top: 16px; font-size: 1.25rem; padding: 14px 40px; }
+
+  /* summary */
+  .summary { text-align: center; }
+  .stars { font-size: 3.2rem; letter-spacing: 6px; margin: 6px 0; }
+  .big-score { font-size: 2.4rem; font-weight: 900; color: var(--accent-dark); }
+  .review { text-align: left; margin: 16px 0; }
+  .review div { padding: 8px 0; border-bottom: 2px solid var(--line); }
+  .actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
+</style>
+</head>
+<body>
+<main>
+  <section id="menu">
+    <h1>🏛️ Latin Practice</h1>
+    <p class="tagline">Pick your lessons, then pick a game.</p>
+
+    <h2>1. Lessons</h2>
+    <div id="lesson-list"></div>
+
+    <h2>2. Game</h2>
+    <button class="mode" data-mode="basic">
+      <div class="mode-title">📖 Latin → English</div>
+      <div class="mode-desc">See a word like <i>amo</i> and type what it means.</div>
+    </button>
+    <button class="mode" data-mode="endings">
+      <div class="mode-title">🔤 Latin → English with endings</div>
+      <div class="mode-desc">See words like <i>amant</i> and tell who is doing it: “they love”.</div>
+    </button>
+    <button class="mode" data-mode="grammar">
+      <div class="mode-title">🧩 Grammar detective</div>
+      <div class="mode-desc">Singular or plural? Which person or declension? Masculine or feminine?</div>
+    </button>
+  </section>
+
+  <section id="quiz" style="display:none">
+    <div class="topbar">
+      <button class="link" id="quit-btn">← Menu</button>
+      <div class="progress"><div id="progress-bar"></div></div>
+      <div class="score">⭐ <span id="score">0</span></div>
+    </div>
+    <div class="card" id="question"></div>
+  </section>
+
+  <section id="summary" style="display:none">
+    <div class="card summary" id="summary-card"></div>
+  </section>
+</main>
+
+<script src="lessons.js"></script>
+<script src="latin.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
